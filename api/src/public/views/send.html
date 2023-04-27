@@ -18,8 +18,13 @@
           Featured
         </div>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item">{{ Nome .}}</li>
-          <li class="list-group-item">{{ Pass .}}</li>
+          <li class="list-group-item">{{.Nome }}</li>
+          <li class="list-group-item">{{.Pass }}</li>
+        </ul>
+        <ul class="list-group list-group-flush">
+          {{if .hasError}}
+          <li class="list-group-item bg-danger"> Erro: email inválido: {{.Erro }}</li>
+          {{end}}
         </ul>
       </div>
 </body>
