@@ -1,9 +1,11 @@
 package main
 
 import (
+	"api/src/config"
+	"api/src/db"
+	"api/src/models"
+	"api/src/repositories"
 	"fmt"
-	"log"
-	"net/mail"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html"
@@ -15,6 +17,10 @@ type Person struct {
 }
 
 func main() {
+	config.Load()
+	fmt.Print("Listening on port: $d \n", config.Port)
+	fmt.Println(config.StringConexaoBanco)
+	fmt.Println("Rodando API")
 	engine := html.New("./src/public/views", ".html")
 	app := fiber.New(fiber.Config{
 		Views: engine,
@@ -36,29 +42,33 @@ func main() {
 	})
 
 	app.Post("api/enviar", func(c *fiber.Ctx) error {
-		person := new(Person)
-		if err := c.BodyParser(person); err != nil {
+		user := new(models.User)
+		if err := c.BodyParser(user); err != nil {
 			return err
 		}
-		log.Println(person.Name)
-		log.Println(person.Pass)
-		_, err := mail.ParseAddress(person.Name)
-		if err != nil {
-			condition := true
-			log.Println("Erro: Email inválido!", err)
-			return c.Render("send", fiber.Map{
-				"Erro":     err,
-				"hasError": condition,
-			})
-		}
 
-		output := make([]Person, 1)
-		output = append(output, *person)
-		log.Println(output)
+		if erro := user.Prepare("register"); erro != nil {
+			fmt.Println("Status Bad request")
+			return erro
+		}
+		db, erro := db.Connect()
+		if erro != nil {
+			fmt.Println("Algo deu errado:", erro)
+			return erro
+		}
+		defer db.Close()
+		repositorie := repositories.NewRepository(db)
+		Id, erro := repositorie.CreateUser(user)
+		if erro != nil {
+			fmt.Println("Status Internal Server Error", erro)
+			return erro
+		}
+		fmt.Println("Id do usuário:", Id)
 
 		return c.Render("send", fiber.Map{
-			"Nome": person.Name,
-			"Pass": person.Pass,
+			"Nome": user.Name,
+			"Pass": user.Email,
+			"Id":   Id,
 		})
 	})
 
