@@ -1,14 +1,19 @@
 {{ template "partials/template" .}}
 <body>
-    <form action="enviar" class="ml-2" method="post">
+    <form action="api/enviar" class="ml-2" method="post">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" name="Name" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your Name">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
         <div class="form-group">
           <label for="exampleInputEmail1">Email address</label>
-          <input type="text" name="name" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+          <input type="text" name="Email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter your best email">
           <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
         </div>
         <div class="form-group">
           <label for="exampleInputPassword1">Password</label>
-          <input type="text" name="pass" class="form-control" id="exampleInputPassword1" placeholder="pass">
+          <input type="text" name="Password" class="form-control" id="exampleInputPassword1" placeholder="your Password">
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
@@ -19,7 +24,7 @@
         </div>
         <ul class="list-group list-group-flush">
           <li class="list-group-item">{{.Nome }}</li>
-          <li class="list-group-item">{{.Pass }}</li>
+          <li class="list-group-item">{{.Email }}</li>
         </ul>
         <ul class="list-group list-group-flush">
           {{if .hasError}}
